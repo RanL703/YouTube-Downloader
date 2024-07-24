@@ -1,20 +1,24 @@
 from pytube import YouTube
+import os
+import re
+
+def sanitize_filename(filename):
+    sanitized = re.sub(r'[<>:"/\\|?*]', '_', filename)
+    return sanitized
 
 try:
-    # to input the YouTube link
-    URL = input("Enter the YouTube link:")
-    
+    URL = ""
+    output_directory = r""  
     yt = YouTube(URL)
-    
-    print("Title:", yt.title)
-    print("Views:", yt.views)
-
-    # extract the highest resolution of the stream
-    d = yt.streams.get_highest_resolution()
-    
-    # downloading to the directory
-    d.download()
-    
-    print("Download complete.")
+    stream = yt.streams.get_highest_resolution()
+    title = sanitize_filename(yt.title)
+    output_filename = f"{title}.mp4"
+    video_path = os.path.join(output_directory, output_filename)
+    stream.download(output_path=output_directory, filename=output_filename)
+    print(f"Downloaded {yt.title}.")
 except Exception as e:
-    print("An error occurred:", str(e))
+    print(f"Error Downloading {video_url}: {e}")
+    import traceback
+    traceback.print_exc()
+
+print("Video Downloaded Successfully")
